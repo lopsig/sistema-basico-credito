@@ -28,3 +28,41 @@ const guardarTasa = () => {
     mostrarTexto("mensajeTasa", `Tasa configurada correctamente: ${tasa}%`);
   }
 }
+
+const guardarCliente = () => {
+  let cedula = recuperaraTexto("inputCedula");
+  let nombre = recuperaraTexto("inputNombre");
+  let apellido = recuperaraTexto("inputApellido");
+  let ingresos = recuperarFloat("inputIngresos")
+  let egresos = recuperarFloat("inputEgresos")
+
+  let cliente = {}
+  cliente.cedula = cedula
+  cliente.nombre = nombre
+  cliente.apellido = apellido
+  cliente.ingresos = ingresos
+  cliente.egresos = egresos
+
+  clientes.push(cliente)
+  pintarClientes()
+}
+
+const pintarClientes = () => {
+  let cmpTabla = document.getElementById("tablaClientes")
+  let contenidoTabla = ""
+  clientes.forEach(cliente => {
+    contenidoTabla += "<tr>" +
+      "<td>"+ cliente.cedula +"</td>" +
+      "<td>"+ cliente.nombre +"</td>" +
+      "<td>"+ cliente.apellido +"</td>" +
+      "<td>"+ cliente.ingresos +"</td>" +
+      "<td>"+ cliente.egresos +"</td>" +
+      "<td>" +
+        "<button>Actualizar</button>" +
+        "<button button >Eliminar</button > " +
+        "</td>"+
+      "</tr>"
+
+  });
+  cmpTabla.innerHTML = contenidoTabla
+}
