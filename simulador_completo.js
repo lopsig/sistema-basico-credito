@@ -21,7 +21,7 @@ const showSection = (idSection) => {
 }
 
 const guardarTasa = () => {
-  let tasa = recuperarInt("tasaInteres");
+  let tasa = recuperarFloat("tasaInteres");
   if (tasa<10 || tasa>20)  {
     mostrarTexto("mensajeTasa", "La tasa debe estar entre 10% y 20%");
   } else {
@@ -29,21 +29,41 @@ const guardarTasa = () => {
   }
 }
 
+const limpiar = () => {
+  limpiarTextoEnCaja("inputCedula")
+  limpiarTextoEnCaja("inputNombre")
+  limpiarTextoEnCaja("inputApellido")
+  limpiarTextoEnCaja("inputIngresos")
+  limpiarTextoEnCaja("inputEgresos")
+}
+
+
+
 const guardarCliente = () => {
   let cedula = recuperaraTexto("inputCedula");
   let nombre = recuperaraTexto("inputNombre");
   let apellido = recuperaraTexto("inputApellido");
-  let ingresos = recuperarFloat("inputIngresos")
-  let egresos = recuperarFloat("inputEgresos")
+  let ingresos = recuperarFloat("inputIngresos");
+  let egresos = recuperarFloat("inputEgresos");
+  
+  let verificarCliente = buscarCliente(cedula)
+  let nuevoCliente = {};
 
-  let cliente = {}
-  cliente.cedula = cedula
-  cliente.nombre = nombre
-  cliente.apellido = apellido
-  cliente.ingresos = ingresos
-  cliente.egresos = egresos
+  if (verificarCliente == null) {
+      nuevoCliente.cedula = cedula;
+      nuevoCliente.nombre = nombre;
+      nuevoCliente.apellido = apellido;
+      nuevoCliente.ingresos = ingresos;
+    nuevoCliente.egresos = egresos;
+    clientes.push(nuevoCliente);
+    
+  } else {
+    verificarCliente.nombre = nombre
+    verificarCliente.apellido = apellido
+    verificarCliente.ingresos = ingresos
+    verificarCliente.egresos = egresos
+  }
 
-  clientes.push(cliente)
   pintarClientes()
 }
 
@@ -58,11 +78,30 @@ const pintarClientes = () => {
       "<td>"+ cliente.ingresos +"</td>" +
       "<td>"+ cliente.egresos +"</td>" +
       "<td>" +
-        "<button>Actualizar</button>" +
+        "<button onclick = seleccionarCliente("+cliente.cedula+")>Actualizar</button>" +
         "<button button >Eliminar</button > " +
         "</td>"+
       "</tr>"
 
   });
   cmpTabla.innerHTML = contenidoTabla
+}
+
+const buscarCliente = (cedula) => {
+  let clienteEncontrado = null
+  clientes.forEach(cliente => {
+    if (cliente.cedula == cedula) {
+      clienteEncontrado = cliente
+    }
+  });
+  return clienteEncontrado
+}
+
+const seleccionarCliente = (cedula) => {
+  let clienteSeleccionado = buscarCliente(cedula)
+  mostrarTextoEnCaja("inputCedula",clienteSeleccionado.cedula)
+  mostrarTextoEnCaja("inputNombre",clienteSeleccionado.nombre)
+  mostrarTextoEnCaja("inputApellido",clienteSeleccionado.apellido)
+  mostrarTextoEnCaja("inputIngresos",clienteSeleccionado.ingresos)
+  mostrarTextoEnCaja("inputEgresos",clienteSeleccionado.egresos)
 }
