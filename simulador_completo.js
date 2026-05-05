@@ -13,6 +13,7 @@ let creditoAprobado = false;
 const hideSection = () => {
   document.getElementById("parametros").classList.remove("activa");
   document.getElementById("clientes").classList.remove("activa");
+  document.getElementById("creditos").classList.remove("activa");
 }
 
 const showSection = (idSection) => {
@@ -75,8 +76,8 @@ const pintarClientes = () => {
       "<td>"+ cliente.cedula +"</td>" +
       "<td>"+ cliente.nombre +"</td>" +
       "<td>"+ cliente.apellido +"</td>" +
-      "<td>"+ cliente.ingresos +"</td>" +
-      "<td>"+ cliente.egresos +"</td>" +
+      "<td>$"+ cliente.ingresos +"</td>" +
+      "<td>$"+ cliente.egresos +"</td>" +
       "<td>" +
         "<button onclick = seleccionarCliente("+cliente.cedula+")>Actualizar</button>" +
         "<button button >Eliminar</button > " +
@@ -104,4 +105,63 @@ const seleccionarCliente = (cedula) => {
   mostrarTextoEnCaja("inputApellido",clienteSeleccionado.apellido)
   mostrarTextoEnCaja("inputIngresos",clienteSeleccionado.ingresos)
   mostrarTextoEnCaja("inputEgresos",clienteSeleccionado.egresos)
+}
+
+const buscarClienteCredito = () => {
+  let cedula = recuperaraTexto("buscarCedulaCredito");
+  let clienteExiste = buscarCliente(cedula);
+  console.log(clienteExiste)
+  let componenteDiv = document.getElementById("datosClienteCredito");
+  let contenidoDiv = "";
+
+  if (clienteExiste == null) {
+    contenidoDiv = "No existe un cliente con ese número de cédula"
+  }
+  else {
+    contenidoDiv += "<h3>Datos del Cliente</h3>" +
+      "<p><strong>Cédula: </strong>"+clienteExiste.cedula+"</p>"+
+      "<p><strong>Nombre: </strong>"+clienteExiste.nombre+"</p>"+
+      "<p><strong>Apellido: </strong>"+clienteExiste.apellido+"</p>"+
+      "<p><strong>Ingresos: </strong>$"+clienteExiste.ingresos+"</p>"+
+      "<p><strong>Egresos: </strong>$"+clienteExiste.egresos+"</p>"
+  }
+
+  componenteDiv.innerHTML = contenidoDiv
+  
+}
+
+const calcularCredito = () => {
+  let cedula = recuperaraTexto("buscarCedulaCredito");
+  let clienteExiste = buscarCliente(cedula);
+  let componenteDiv = document.getElementById("resultadoCredito");
+  let contenidoDiv = "";
+
+
+  
+  if (clienteExiste == null) {
+    contenidoDiv = "ERROR"
+  } else {
+    let balance = calculateAvailableBalance(clienteExiste.ingresos, clienteExiste.egresos)
+    let abilityPay = calculateAbilityPay(balance)
+
+    let amount = recuperarFloat("montoCredito"); //HACER VALIDACIONES
+    let rate = recuperarFloat("tasaInteres");
+    let term = recuperarInt("plazoCredito"); // HACER VALIDACIONES
+
+    let simpleInterest = calculateSimpleInterest(amount, rate, term)
+    let total = calculateTotal(amount, simpleInterest)
+
+    let monthlyPayment = calculateMonthlyPayment(total, term)
+    let approveCredits = approveCredit(abilityPay, monthlyPayment)
+    showSpanCredit("creditoEstado", approveCredits);
+    
+    
+    
+    contenidoDiv +=
+    "<p><strong>Capacidad de Pago: </strong>$" + abilityPay + "</p>" +
+    "<p><strong>Total a Pagar: </strong>$" + total + "</p>"+
+    "<p><strong>Cuota Mensual: </strong>$" + monthlyPayment + "</p>"
+  }
+
+  componenteDiv.innerHTML = contenidoDiv
 }
