@@ -21,11 +21,16 @@ const showSection = (idSection) => {
   document.getElementById(idSection).classList.add("activa");
 }
 
+let tasaConfigurada = false
+
 const guardarTasa = () => {
   let tasa = recuperarFloat("tasaInteres");
   if (tasa<10 || tasa>20)  {
     mostrarTexto("mensajeTasa", "La tasa debe estar entre 10% y 20%");
+    tasaConfigurada = false
   } else {
+    tasaInteres = tasa
+    tasaConfigurada = true
     mostrarTexto("mensajeTasa", `Tasa configurada correctamente: ${tasa}%`);
   }
 }
@@ -108,6 +113,9 @@ const seleccionarCliente = (cedula) => {
 }
 
 const buscarClienteCredito = () => {
+  document.getElementById("creditoEstado").textContent = "";
+  document.getElementById("creditoEstado").className = "";
+  document.getElementById("resultadoCredito").textContent = "";
   let cedula = recuperaraTexto("buscarCedulaCredito");
   let clienteExiste = buscarCliente(cedula);
   console.log(clienteExiste)
@@ -131,37 +139,59 @@ const buscarClienteCredito = () => {
 }
 
 const calcularCredito = () => {
+  let rate = tasaInteres
+  if (!tasaConfigurada) {
+    alert(
+      "Debes configurar la tasa de interés en la sección Parámetros antes de calcular.",
+    );
+    return;
+  }
+
+  let amount = recuperarFloat("montoCredito");
+  if (isNaN(amount) || amount <= 0) {
+    alert("Debes ingresar un monto válido mayor a cero.");
+    return;
+  }
+
+  let term = recuperarInt("plazoCredito");
+  if (isNaN(term) || term <= 0) {
+    alert("Debes ingresar un plazo válido mayor a cero.");
+    return;
+  }
+
+
   let cedula = recuperaraTexto("buscarCedulaCredito");
   let clienteExiste = buscarCliente(cedula);
   let componenteDiv = document.getElementById("resultadoCredito");
   let contenidoDiv = "";
 
-
-  
   if (clienteExiste == null) {
-    contenidoDiv = "ERROR"
+    contenidoDiv = "ERROR";
   } else {
-    let balance = calculateAvailableBalance(clienteExiste.ingresos, clienteExiste.egresos)
-    let abilityPay = calculateAbilityPay(balance)
+    let balance = calculateAvailableBalance(
+      clienteExiste.ingresos,
+      clienteExiste.egresos,
+    );
+    let abilityPay = calculateAbilityPay(balance);
 
-    let amount = recuperarFloat("montoCredito"); //HACER VALIDACIONES
-    let rate = recuperarFloat("tasaInteres");
-    let term = recuperarInt("plazoCredito"); // HACER VALIDACIONES
+    let simpleInterest = calculateSimpleInterest(amount, rate, term);
+    let total = calculateTotal(amount, simpleInterest);
 
-    let simpleInterest = calculateSimpleInterest(amount, rate, term)
-    let total = calculateTotal(amount, simpleInterest)
-
-    let monthlyPayment = calculateMonthlyPayment(total, term)
-    let approveCredits = approveCredit(abilityPay, monthlyPayment)
+    let monthlyPayment = calculateMonthlyPayment(total, term);
+    let approveCredits = approveCredit(abilityPay, monthlyPayment);
     showSpanCredit("creditoEstado", approveCredits);
-    
-    
-    
+
     contenidoDiv +=
-    "<p><strong>Capacidad de Pago: </strong>$" + abilityPay + "</p>" +
-    "<p><strong>Total a Pagar: </strong>$" + total + "</p>"+
-    "<p><strong>Cuota Mensual: </strong>$" + monthlyPayment + "</p>"
+      "<p><strong>Capacidad de Pago: </strong>$" +
+      abilityPay +
+      "</p>" +
+      "<p><strong>Total a Pagar: </strong>$" +
+      total +
+      "</p>" +
+      "<p><strong>Cuota Mensual: </strong>$" +
+      monthlyPayment +
+      "</p>";
   }
 
-  componenteDiv.innerHTML = contenidoDiv
+  componenteDiv.innerHTML = contenidoDiv;
 }
