@@ -9,11 +9,13 @@ let montoCalculado = 0;
 let plazoCalculado = 0;
 let creditoAprobado = false;
 
+let tasaConfigurada = false
 
 const hideSection = () => {
   document.getElementById("parametros").classList.remove("activa");
   document.getElementById("clientes").classList.remove("activa");
   document.getElementById("creditos").classList.remove("activa");
+  document.getElementById("contacto").classList.remove("activa");
 }
 
 const showSection = (idSection) => {
@@ -21,7 +23,6 @@ const showSection = (idSection) => {
   document.getElementById(idSection).classList.add("activa");
 }
 
-let tasaConfigurada = false
 
 const guardarTasa = () => {
   let tasa = recuperarFloat("tasaInteres");
@@ -33,12 +34,14 @@ const guardarTasa = () => {
     tasaConfigurada = true
     mostrarTexto("mensajeTasa", `Tasa configurada correctamente: ${tasa}%`);
   }
+  console.log(tasa)
 }
 
 const limpiar = () => {
   limpiarTextoEnCaja("inputCedula")
   limpiarTextoEnCaja("inputNombre")
   limpiarTextoEnCaja("inputApellido")
+  limpiarTextoEnCaja("inputEmail");
   limpiarTextoEnCaja("inputIngresos")
   limpiarTextoEnCaja("inputEgresos")
 }
@@ -49,6 +52,7 @@ const guardarCliente = () => {
   let cedula = recuperaraTexto("inputCedula");
   let nombre = recuperaraTexto("inputNombre");
   let apellido = recuperaraTexto("inputApellido");
+  let email = recuperaraTexto("inputEmail");
   let ingresos = recuperarFloat("inputIngresos");
   let egresos = recuperarFloat("inputEgresos");
   
@@ -59,6 +63,7 @@ const guardarCliente = () => {
       nuevoCliente.cedula = cedula;
       nuevoCliente.nombre = nombre;
       nuevoCliente.apellido = apellido;
+      nuevoCliente.email = email;
       nuevoCliente.ingresos = ingresos;
     nuevoCliente.egresos = egresos;
     clientes.push(nuevoCliente);
@@ -66,6 +71,7 @@ const guardarCliente = () => {
   } else {
     verificarCliente.nombre = nombre
     verificarCliente.apellido = apellido
+    verificarCliente.email = email
     verificarCliente.ingresos = ingresos
     verificarCliente.egresos = egresos
   }
@@ -81,6 +87,7 @@ const pintarClientes = () => {
       "<td>"+ cliente.cedula +"</td>" +
       "<td>"+ cliente.nombre +"</td>" +
       "<td>"+ cliente.apellido +"</td>" +
+      "<td>"+ cliente.email +"</td>" +
       "<td>$"+ cliente.ingresos +"</td>" +
       "<td>$"+ cliente.egresos +"</td>" +
       "<td>" +
@@ -103,11 +110,13 @@ const buscarCliente = (cedula) => {
   return clienteEncontrado
 }
 
+
 const seleccionarCliente = (cedula) => {
   let clienteSeleccionado = buscarCliente(cedula)
   mostrarTextoEnCaja("inputCedula",clienteSeleccionado.cedula)
   mostrarTextoEnCaja("inputNombre",clienteSeleccionado.nombre)
   mostrarTextoEnCaja("inputApellido",clienteSeleccionado.apellido)
+  mostrarTextoEnCaja("inputEmail",clienteSeleccionado.email)
   mostrarTextoEnCaja("inputIngresos",clienteSeleccionado.ingresos)
   mostrarTextoEnCaja("inputEgresos",clienteSeleccionado.egresos)
 }
@@ -116,6 +125,7 @@ const buscarClienteCredito = () => {
   document.getElementById("creditoEstado").textContent = "";
   document.getElementById("creditoEstado").className = "";
   document.getElementById("resultadoCredito").textContent = "";
+
   let cedula = recuperaraTexto("buscarCedulaCredito");
   let clienteExiste = buscarCliente(cedula);
   console.log(clienteExiste)
