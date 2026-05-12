@@ -70,9 +70,11 @@ const showSpan = (idComponent, value) => {
   component.textContent = "USD " + value;
 };
 
+
+
 const showSpanCredit = (idComponent, value) => {
   let component = document.getElementById(idComponent);
-
+  
   if (value == true) {
     component.textContent = "CRÉDITO APROBADO";
     component.className = "aprobado";
@@ -151,3 +153,4 @@ const validateInputs = () => {
 
   return valid;
 };
+
