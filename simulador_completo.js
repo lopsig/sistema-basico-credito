@@ -249,6 +249,7 @@ const solicitarCredito = () => {
 
   creditos.push(credito);
   console.log(creditos);
+  document.getElementById("btnSolicitarCredito").disabled = true;
 };
 
 const buscarCreditos = (cedula) => {
