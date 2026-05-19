@@ -3,20 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>Sistema de Créditos</title>
+  <link rel="stylesheet" href="simulador_completo.css">
 </head>
 <body>
 
 <header>
   <h1>Sistema Básico de Créditos</h1>
-  <link rel="stylesheet" href="simulador_completo.css">
 </header>
 
 <nav>
   <button onclick="showSection('parametros')">Parámetros</button>
   <button onclick="showSection('clientes')">Clientes</button>
   <button onclick="showSection('creditos')">Créditos</button>
-  <!-- <button onclick="showSection('contacto')">Contacto</button> -->
   <button onclick="showSection('listaCreditos'); pintarCreditos(creditos)">Creditos Registrados</button>
+  <button onclick="showSection('creditoVip'); pintarCreditosVip(creditosVip)">Créditos VIP</button>
+  <button onclick="showSection('acercaDe')">Acerca de</button>
+  
 </nav>
 
 <section id="parametros">
@@ -25,11 +27,19 @@
   <label>Tasa de interés:</label>
   <input type="number" id="tasaInteres" min="10" max="20" value="15">
   <span>%</span>
-
   <br>
-  <button onclick="guardarTasa()">Guardar tasa</button>
-
   <p id="mensajeTasa"></p>
+  <button onclick="guardarTasa()">Guardar tasa</button>
+  <br>
+  <label>Monto Máximo:</label>
+  <input type="number" id="montoMaximo" min="100" max="10000" value="">
+  <span>$</span>
+  <br>
+  <p id="mensajeMontoMaximo"></p>
+  <button onclick="montoMaximo()">Guardar Monto</button>
+
+
+ 
 </section>
 
 <section id="clientes">
@@ -38,7 +48,8 @@
   <input type="text" id="inputCedula" placeholder="Ingresa el numero de CI">
   <input type="text" id="inputNombre" placeholder="Ingresa el Nombre" >
   <input type="text" id="inputApellido" placeholder="Ingresa el Apellido">
-  <input type="text" id="inputEmail" placeholder="Ingresa el Email">
+  <input type="email" id="inputEmail" placeholder="Ingresa el Email">
+  <input type="text" id="inputTelefono" placeholder="Ingresa el Telefono">
   <input type="number" id="inputIngresos" placeholder="Ingresa los Ingresos" >
   <input type="number" id="inputEgresos" placeholder="Ingresa los Egresos">
 
@@ -54,45 +65,14 @@
         <th>Nombre</th>
         <th>Apellido</th>
         <th>Correo</th>
+        <th>Teléfono</th>
         <th>Ingresos</th>
         <th>Egresos</th>
         <th>Acciones</th>
       </tr>
     </thead>
     <tbody id="tablaClientes">
-       <!-- <tr>
-          <td>1712345678</td>
-          <td>Juan</td>
-          <td>Pérez</td>
-          <td>1200</td>
-          <td>500</td>
-          <td>
-            <button>Actualizar</button>
-            <button>Eliminar</button>
-          </td>
-        </tr>
-        <tr>
-          <td>1723456789</td>
-          <td>María</td>
-          <td>Gómez</td>
-          <td>1500</td>
-          <td>600</td>
-          <td>
-            <button>Actualizar</button>
-            <button>Eliminar</button>
-          </td>
-        </tr>
-        <tr>
-          <td>1734567890</td>
-          <td>Carlos</td>
-          <td>Ramírez</td>
-          <td>900</td>
-          <td>350</td>
-          <td>
-            <button>Actualizar</button>
-            <button>Eliminar</button>
-          </td>
-        </tr> -->
+
     </tbody>
   </table>
 </section>
@@ -105,10 +85,10 @@
 
   <div id="datosClienteCredito" class="card"></div>
 
-  <input type="number" id="montoCredito" placeholder="Ingresa el Monto" required>
-  <input type="number" id="plazoCredito" placeholder="Ingresa el Plazo" required>
+  <!-- <input type="number" id="montoCredito" placeholder="Ingresa el Monto" required> -->
+  <input type="number" id="plazoCredito" placeholder="Ingresa el Plazo en años" required>
   <div>
-    <p>ATENCIÓN: La Tasa deber ser definida desde la ventana "Parámetros"</p>
+    <p>ATENCIÓN: <strong>Tasa y Monto </strong>  deben ser definidos desde la ventana "Parámetros"</p>
   </div>
 
   <br>
@@ -124,10 +104,6 @@
 </section>
 
 
-<!-- <section id='contacto'>
-  <h2>Desarrollador por: Jonathan López</h2>
-
-</section> -->
 
 <section id="listaCreditos">
   <h2>Créditos Registrados</h2>
@@ -150,45 +126,50 @@
       </tr>
     </thead>
     <tbody id="tablaCreditos">
-      <!-- <tr>
-        <td>1712345678</td>
-        <td>Juan</td>
-        <td>Pérez</td>
-        <td>3000</td>
-        <td>15%</td>
-        <td>12 meses</td>
-        <td>287.50</td>
-        <td><button>Eliminar</button></td>
-      </tr>
-      <tr>
-        <td>1723456789</td>
-        <td>María</td>
-        <td>Gómez</td>
-        <td>5000</td>
-        <td>14%</td>
-        <td>24 meses</td>
-        <td>237.50</td>
-        <td><button>Eliminar</button></td>
-      </tr>
-      <tr>
-        <td>1734567890</td>
-        <td>Carlos</td>
-        <td>Ramírez</td>
-        <td>1500</td>
-        <td>16%</td>
-        <td>6 meses</td>
-        <td>290.00</td>
-        <td><button>Eliminar</button></td>
-      </tr> -->
+
     </tbody>
   </table>
 </section>
 
+<section id="creditoVip">
+  <h2>Créditos VIP Registrados</h2>
+
+  <input type="text" id="buscarCedulaListadoVip">
+  <button onclick="buscarCreditosVipCliente()">Buscar</button>
+  <button onclick="pintarCreditosVip(creditosVip)">Ver todos</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Cédula</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Monto</th>
+        <th>Tasa</th>
+        <th>Plazo</th>
+        <th>Cuota</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody id="tablaCreditosVip">
+
+    </tbody>
+  </table>
+</section>
+<section id="acercaDe">
+  <h2>Acerca del Desarrollador</h2>
+  <div class="card">
+    <h3 style="color: #1f3c88;">LopSig Dev</h3>
+    <p>🎓 <strong>Institución:</strong> KrakeDev Escuela de Programación</p>
+    <p>📧 <strong>Email:</strong> <a href="mailto:lopsig.dev@gmail.com">lopsig.dev@gmail.com</a></p>
+    <p>📸 <strong>Instagram:</strong> <a href="https://instagram.com/jlls_12" target="_blank">@jlls_12</a></p>
+  </div>
+</section>
 
 
 
-<script src="simulador_completo.js"></script>
 <script src="utilitarios.js"></script>
 <script src="funciones.js"></script>
+<script src="simulador_completo.js"></script>
 </body>
 </html>

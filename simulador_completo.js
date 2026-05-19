@@ -1,5 +1,6 @@
 let clientes = [];
 let creditos = [];
+let creditosVip = []
 
 let tasaInteres = 15;
 let clienteSeleccionado = null;
@@ -9,13 +10,15 @@ let term = 0;
 let creditoAprobado = false;
 
 let tasaConfigurada = false;
+let montoMaximoConfigurado = false
 
 const hideSection = () => {
   document.getElementById("parametros").classList.remove("activa");
   document.getElementById("clientes").classList.remove("activa");
   document.getElementById("creditos").classList.remove("activa");
-  // document.getElementById("contacto").classList.remove("activa");
   document.getElementById("listaCreditos").classList.remove("activa");
+  document.getElementById("creditoVip").classList.remove("activa");
+  document.getElementById("acercaDe").classList.remove("activa");
 };
 
 const showSection = (idSection) => {
@@ -36,11 +39,28 @@ const guardarTasa = () => {
   console.log(tasa);
 };
 
+const montoMaximo = () => {
+  let montoMaximo = recuperarFloat("montoMaximo");
+  if (montoMaximo < 100 || montoMaximo > 10000) {
+    mostrarTexto("mensajeMontoMaximo", "Solo se permiten montos mínimos de $100 y máximos de $10000");
+    montoMaximoConfigurado = false
+    limpiarTextoEnCaja("montoMaximo")
+  } else {
+    amount = montoMaximo
+    montoMaximoConfigurado = true
+    mostrarTexto(
+      "mensajeMontoMaximo", `Monto configurado correctamente:$${montoMaximo}`,
+    );
+    console.log(amount)
+  }
+}
+
 const limpiar = () => {
   limpiarTextoEnCaja("inputCedula");
   limpiarTextoEnCaja("inputNombre");
   limpiarTextoEnCaja("inputApellido");
   limpiarTextoEnCaja("inputEmail");
+  limpiarTextoEnCaja("inputTelefono");
   limpiarTextoEnCaja("inputIngresos");
   limpiarTextoEnCaja("inputEgresos");
 };
@@ -50,6 +70,7 @@ const guardarCliente = () => {
   let nombre = recuperaraTexto("inputNombre");
   let apellido = recuperaraTexto("inputApellido");
   let email = recuperaraTexto("inputEmail");
+  let telefono = recuperaraTexto("inputTelefono");
   let ingresos = recuperarFloat("inputIngresos");
   let egresos = recuperarFloat("inputEgresos");
 
@@ -61,6 +82,7 @@ const guardarCliente = () => {
     nuevoCliente.nombre = nombre;
     nuevoCliente.apellido = apellido;
     nuevoCliente.email = email;
+    nuevoCliente.telefono = telefono;
     nuevoCliente.ingresos = ingresos;
     nuevoCliente.egresos = egresos;
     clientes.push(nuevoCliente);
@@ -68,6 +90,7 @@ const guardarCliente = () => {
     verificarCliente.nombre = nombre;
     verificarCliente.apellido = apellido;
     verificarCliente.email = email;
+    verificarCliente.telefono = telefono;
     verificarCliente.ingresos = ingresos;
     verificarCliente.egresos = egresos;
   }
@@ -92,6 +115,9 @@ const pintarClientes = () => {
       "</td>" +
       "<td>" +
       cliente.email +
+      "</td>" +
+      "<td>" +
+      cliente.telefono +
       "</td>" +
       "<td>$" +
       cliente.ingresos +
@@ -128,6 +154,7 @@ const seleccionarCliente = (cedula) => {
   mostrarTextoEnCaja("inputNombre", clienteSeleccionado.nombre);
   mostrarTextoEnCaja("inputApellido", clienteSeleccionado.apellido);
   mostrarTextoEnCaja("inputEmail", clienteSeleccionado.email);
+  mostrarTextoEnCaja("inputTelefono", clienteSeleccionado.telefono);
   mostrarTextoEnCaja("inputIngresos", clienteSeleccionado.ingresos);
   mostrarTextoEnCaja("inputEgresos", clienteSeleccionado.egresos);
 };
@@ -166,6 +193,7 @@ const buscarClienteCredito = () => {
   }
 
   componenteDiv.innerHTML = contenidoDiv;
+  console.log(amount)
 };
 
 const calcularCredito = () => {
@@ -177,11 +205,11 @@ const calcularCredito = () => {
     return;
   }
 
-  amount = recuperarFloat("montoCredito");
-  if (isNaN(amount) || amount <= 0) {
-    alert("Debes ingresar un monto válido mayor a cero.");
-    return;
-  }
+  // amount = recuperarFloat("montoCredito");
+  // if (isNaN(amount) || amount <= 0) {
+  //   alert("Debes ingresar un monto válido mayor a cero.");
+  //   return;
+  // }
 
   term = recuperarInt("plazoCredito");
   if (isNaN(term) || term <= 0) {
@@ -237,6 +265,7 @@ const solicitarCredito = () => {
   let cedula = recuperaraTexto("buscarCedulaCredito");
   let clienteExiste = buscarCliente(cedula);
 
+
   let credito = {
     cedula: clienteExiste.cedula,
     nombre: clienteExiste.nombre,
@@ -247,14 +276,29 @@ const solicitarCredito = () => {
     cuota: monthlyPayment,
   };
 
-  creditos.push(credito);
-  console.log(creditos);
+  if (credito.monto > 5000) {
+    creditosVip.push(credito)
+    creditos.push(credito)
+    console.log(creditosVip)
+  } else {
+    creditos.push(credito);
+    console.log(creditos);
+  }
   document.getElementById("btnSolicitarCredito").disabled = true;
 };
 
 const buscarCreditos = (cedula) => {
   let creditoEncontrado = [];
   creditos.forEach((credito) => {
+    if (credito.cedula == cedula) {
+      creditoEncontrado.push(credito);
+    }
+  });
+  return creditoEncontrado;
+};
+const buscarCreditosVip = (cedula) => {
+  let creditoEncontrado = [];
+  creditosVip.forEach((credito) => {
     if (credito.cedula == cedula) {
       creditoEncontrado.push(credito);
     }
@@ -299,12 +343,55 @@ const pintarCreditos = (creditosEncontrados) => {
   });
   cmpTabla.innerHTML = contenidoTabla;
 };
+const pintarCreditosVip = (creditosEncontrados) => {
+  let cmpTabla = document.getElementById("tablaCreditosVip");
+  let contenidoTabla = "";
+
+  creditosEncontrados.forEach((credito) => {
+    contenidoTabla +=
+      "<tr>" +
+      "<td>" +
+      credito.cedula +
+      "</td>" +
+      "<td>" +
+      credito.nombre +
+      "</td>" +
+      "<td>" +
+      credito.apellido +
+      "</td>" +
+      "<td>$" +
+      credito.monto +
+      "</td>" +
+      "<td>" +
+      credito.tasa +
+      "%</td>" +
+      "<td>" +
+      credito.plazo +
+      " años</td>" +
+      "<td>$" +
+      credito.cuota +
+      "</td>" +
+      "<td>" +
+      "<button onclick='eliminarCreditoVip(" +
+      creditosVip.indexOf(credito) +
+      ")'>Eliminar</button>" +
+      "</td>" +
+      "</tr>";
+  });
+  cmpTabla.innerHTML = contenidoTabla;
+};
 
 const buscarCreditosCliente = () => {
   let cedula = recuperaraTexto("buscarCedulaListado");
   let creditosCliente = buscarCreditos(cedula);
   console.log(creditosCliente);
   pintarCreditos(creditosCliente);
+};
+const buscarCreditosVipCliente = () => {
+  let cedula = recuperaraTexto("buscarCedulaListadoVip");
+  let creditosCliente = buscarCreditosVip(cedula);
+  console.log(creditosCliente);
+  pintarCreditosVip(creditosCliente);
 };
 
 ///Funciones que no se mencionaban en los PDFs
@@ -326,4 +413,11 @@ const eliminarCredito = (indice) => {
   
   creditos.splice(indice, 1);
   pintarCreditos(creditos);
+};
+const eliminarCreditoVip = (indice) => {
+  let confirmar = confirm("Estas seguro de que deseas eliminar este Credito?");
+  if (!confirmar) return
+  
+  creditosVip.splice(indice, 1);
+  pintarCreditosVip(creditosVip);
 };
